@@ -1,56 +1,10 @@
-<html>
-
-<head>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/default.min.css">
-<script>hljs.initHighlightingOnLoad();</script>
-</head>
-
-<body>
-
-<script>
-function escapeRegExp(string) {
-    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-}
-
-function replaceAll(string, find, replace) {
-  return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
-}
-
-function sar( ) {
+New collection name (in singular form, e.g. "product") and press TAB. 
+todo
  
- var templateString = $("#template_pre").text();
- 
- var newName= $("#newName").val();
- 
- var newContents = replaceAll(templateString, "TEMPLATE", newName );
- $("#template_output").text( newContents);
- 
-  $('#template_output').each(function(i, block) {
-    hljs.highlightBlock(block);
-  });
-
-
-}
-
-</script>
-
-New collection name (in singular form, e.g. "product") and press TAB.
-<input id="newName" type="text" name="template_name" onChange="sar();" />
-
-<div id="template">
-<pre><code class="json" id="template_output">
-{ "here" : "it comes" } 
-</code>
-</pre>
-
-<pre id="template_pre" style="display:none;">
-
 // copy to application.json / "collections": 
 
 {  
-   "name":"TEMPLATEs",
+   "name":"todos",
    "type":"collection",
    "fields":[  
       {  
@@ -66,20 +20,20 @@ New collection name (in singular form, e.g. "product") and press TAB.
 //  copy to application.json / "queries": 
 
 {  
-   "name":"TEMPLATEs",
-   "collection":"TEMPLATEs"
+   "name":"todos",
+   "collection":"todos"
 },
 {  
-   "name":"TEMPLATE",
-   "collection":"TEMPLATEs",
+   "name":"todo",
+   "collection":"todos",
    "find_one":true,
    "filter":{  
-      "_id":":TEMPLATEId"
+      "_id":":todoId"
    }
 },
 {  
-   "name":"TEMPLATEs_empty",
-   "collection":"TEMPLATEs",
+   "name":"todos_empty",
+   "collection":"todos",
    "find_one":true,
    "filter":{  
       "_id":null
@@ -89,25 +43,25 @@ New collection name (in singular form, e.g. "product") and press TAB.
 //  copy to application.json / "pages": 
 
 {  
-   "name":"TEMPLATEs",
+   "name":"Pagetodos",
    "type":"page",
    "components":[  
       {  
          "name":"view",
-         "query_name":"TEMPLATEs",
-         "insert_route":"TEMPLATEs.insert",
-         "details_route":"TEMPLATEs.details",
-         "edit_route":"TEMPLATEs.edit",
+         "query_name":"todos",
+         "insert_route":"Pagetodos.insert",
+         "details_route":"Pagetodos.details",
+         "edit_route":"Pagetodos.edit",
          "type":"data_view",
          "details_route_params":[  
             {  
-               "name":"TEMPLATEId",
+               "name":"todoId",
                "value":"this._id"
             }
          ],
          "edit_route_params":[  
             {  
-               "name":"TEMPLATEId",
+               "name":"todoId",
                "value":"this._id"
             }
          ]
@@ -120,11 +74,11 @@ New collection name (in singular form, e.g. "product") and press TAB.
          "components":[  
             {  
                "name":"insert_form",
-               "title":"New TEMPLATE",
-               "query_name":"TEMPLATEs_empty",
+               "title":"New todo",
+               "query_name":"todos_empty",
                "mode":"insert",
-               "submit_route":"TEMPLATEs",
-               "cancel_route":"TEMPLATEs",
+               "submit_route":"Pagetodos",
+               "cancel_route":"Pagetodos",
                "type":"form"
             }
          ]
@@ -132,16 +86,16 @@ New collection name (in singular form, e.g. "product") and press TAB.
       {  
          "name":"details",
          "route_params":[  
-            "TEMPLATEId"
+            "todoId"
          ],
          "type":"page",
          "components":[  
             {  
                "name":"details_form",
-               "query_name":"TEMPLATE",
+               "query_name":"todo",
                "mode":"read_only",
-               "close_route":"TEMPLATEs",
-               "back_route":"TEMPLATEs",
+               "close_route":"Pagetodos",
+               "back_route":"Pagetodos",
                "type":"form"
             }
          ]
@@ -149,30 +103,45 @@ New collection name (in singular form, e.g. "product") and press TAB.
       {  
          "name":"edit",
          "route_params":[  
-            "TEMPLATEId"
+            "todoId"
          ],
          "type":"page",
          "components":[  
             {  
                "name":"edit_form",
-               "title":"Edit TEMPLATE",
-               "query_name":"TEMPLATE",
+               "title":"Edit todo",
+               "query_name":"todo",
                "mode":"update",
-               "submit_route":"TEMPLATEs",
-               "cancel_route":"TEMPLATEs",
+               "submit_route":"Pagetodos",
+               "cancel_route":"Pagetodos",
                "type":"form"
             }
          ]
       }
-   ]
+   ],
+					"imports": [
+						"import FormSchema from '/lib/collections/schema-todo.js';",
+						"import {TableColumns, ColumnMeta,FormOptions,SaveCollection} from '/lib/collections/columns-todo.jsx';"
+					]
 }
 
-</pre>
 
-</div>
+// copy to wanted menu definition in application.json. Below "components": [{"name": "left_menu","type": "menu" ...
+                  {
+							"title": "todos",
+							"route": "Pagetodos"
+                  }
+						
 
-</body>
-
-
-</html>
-
+// copy files for schema and columsn files
+"copy_files": [
+		
+			{
+				"source": "files/schema-todo.js",
+				"dest": "BOTH_COLLECTIONS_DIR/schema-todo.js"
+			},
+			{
+				"source": "files/columns-apimoon.jsx",
+				"dest": "BOTH_COLLECTIONS_DIR/columns-todo.jsx"
+			}
+]
